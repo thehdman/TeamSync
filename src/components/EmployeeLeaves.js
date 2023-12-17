@@ -3,13 +3,10 @@ import axios from 'axios';
 
 
 const SalaryLeave = () => {
-
-    const showLeaveDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/GetAllLeaves";
-    const addLeaveDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/AddLeave"
-    const showEmpDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/GetAllEmployee";
+    
+    const API = "https://onlinetestapi.gerasim.in/api/TeamSync/";
     const updateLeaveDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/UpdateLeaves";
-    const deleteLeaveDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/DeleteLeaveById?leaveId="
-
+   
 
     let [empData, setEmpData] = useState([]);
     let [leaveData, setLeaveData] = useState([]);
@@ -21,6 +18,7 @@ const SalaryLeave = () => {
         "noOfFullDayLeaves": 0,
         "noOfHalfDayLeaves": 0
     });
+    let [isLoader, setIsLoader] = useState(true);
 
     useEffect(() => {
         showLeaveData();
@@ -28,7 +26,8 @@ const SalaryLeave = () => {
     }, []);
 
     const showLeaveData = async () => {
-        const result = await axios.get(showLeaveDataApi);
+        const result = await axios.get(API + 'GetAllLeaves');
+        setIsLoader(false);
         setLeaveData(result.data.data);
     }
 
@@ -37,13 +36,13 @@ const SalaryLeave = () => {
     }
 
     const showEmpData = async () => {
-        const result = await axios.get(showEmpDataApi);
+        const result = await axios.get(API + 'GetAllEmployee');
         setEmpData(result.data.data)
     }
 
     const addLeaveData = async () => {
         debugger;
-        const result = await axios.post(addLeaveDataApi, leaveObj);
+        const result = await axios.post(API + 'AddLeave', leaveObj);
         if (result.data.result) {
             alert('Leave Data Added Successfully');
             showLeaveData();
@@ -68,7 +67,7 @@ const SalaryLeave = () => {
     const updateLeaveData = async () => { }
 
     const deleteLeaveData = async (id) => {
-        const result = await axios.get(deleteLeaveDataApi + id);
+        const result = await axios.get(API + 'DeleteLeaveById?leaveId=' + id);
         if (result.data.result) {
             alert('Leave Data Deleted Successfully');
             showLeaveData();
@@ -177,23 +176,42 @@ const SalaryLeave = () => {
                                             <th>Delete</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {
-                                            leaveData.map((item, index) => {
-                                                return (<tr>
-                                                    <td>{index + 1}</td>
-                                                    <td>{item.empName}</td>
-                                                    <td>{item.empContactNo}</td>
-                                                    <td>{item.leaveDate}</td>
-                                                    <td>{item.leaveReason}</td>
-                                                    <td>{item.noOfFullDayLeaves}</td>
-                                                    <td>{item.noOfHalfDayLeaves}</td>
-                                                    <td><button className='btn btn-danger btn-sm' onClick={() => { editLeaveData(item) }}>Edit</button></td>
-                                                    <td><button className='btn btn-primary btn-sm' onClick={() => { deleteLeaveData(item.leaveId) }}>Delete</button></td>
-                                                </tr>)
-                                            })
+                                    {
+                                            isLoader && <tbody>
+                                            <tr>
+                                                <td colSpan={9} className='text-center'>
+                                                    <div class="spinner-border text-muted"></div>
+                                                    <div class="spinner-border text-primary"></div>
+                                                    <div class="spinner-border text-success"></div>
+                                                    <div class="spinner-border text-info"></div>
+                                                    <div class="spinner-border text-warning"></div>
+                                                    <div class="spinner-border text-danger"></div>
+                                                    <div class="spinner-border text-secondary"></div>
+                                                    <div class="spinner-border text-dark"></div>
+                                                    <div class="spinner-border text-light"></div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
                                         }
-                                    </tbody>
+                                        {
+                                            !isLoader && <tbody>
+                                            {
+                                                leaveData.map((item, index) => {
+                                                    return (<tr>
+                                                        <td>{index + 1}</td>
+                                                        <td>{item.empName}</td>
+                                                        <td>{item.empContactNo}</td>
+                                                        <td>{item.leaveDate}</td>
+                                                        <td>{item.leaveReason}</td>
+                                                        <td>{item.noOfFullDayLeaves}</td>
+                                                        <td>{item.noOfHalfDayLeaves}</td>
+                                                        <td><button className='btn btn-danger btn-sm' onClick={() => { editLeaveData(item) }}>Edit</button></td>
+                                                        <td><button className='btn btn-primary btn-sm' onClick={() => { deleteLeaveData(item.leaveId) }}>Delete</button></td>
+                                                    </tr>)
+                                                })
+                                            }
+                                        </tbody>
+                                        }
                                 </table>
                             </div>
                         </div>

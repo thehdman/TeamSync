@@ -2,12 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const EmployeeCreation = () => {
-
-    const addEmpDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/CreateEmployee";
-    const showEmpDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/GetAllEmployee";
-    const showEmpDataByIdApi = "https://onlinetestapi.gerasim.in/api/TeamSync/GetEmployeeByEmpId?empid=";
-    const updateEmpDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/UpdateEmployee";
-    const deleteEmpDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/DeleteEmployeeByEmpId?empid="
+    
+    const API = "https://onlinetestapi.gerasim.in/api/TeamSync/";
 
     let [empData, setEmpData] = useState([]);
     let [empObj, setEmpObj] = useState(
@@ -29,6 +25,7 @@ const EmployeeCreation = () => {
             "salary": 0
           }
     );
+    let [isLoader, setIsLoader] = useState(true);
 
     useEffect(() => {
         showEmpData();
@@ -39,7 +36,7 @@ const EmployeeCreation = () => {
     }
 
     const addEmpData = async () => {
-        const responce = await axios.post(addEmpDataApi, empObj);
+        const responce = await axios.post(API + 'CreateEmployee', empObj);
         if(responce.data.result){
             alert("Employee Data Added Successfully");
             showEmpData();
@@ -50,12 +47,13 @@ const EmployeeCreation = () => {
     }
 
     const showEmpData = async () => {
-        const result = await axios.get(showEmpDataApi);
+        const result = await axios.get(API + 'GetAllEmployee');
+        setIsLoader(false);
         setEmpData(result.data.data)
     }
 
     const showEmpDataById = async (id) => {
-        const result = await axios.get(showEmpDataByIdApi + id);
+        const result = await axios.get(API + 'GetEmployeeByEmpId?empid=' + id);
         if(result.data.result){
             setEmpObj(result.data.data)
         }
@@ -65,7 +63,7 @@ const EmployeeCreation = () => {
     }
 
     const updateEmpData = async () => {
-        const result = await axios.post(updateEmpDataApi, empObj);
+        const result = await axios.post(API + 'UpdateEmployee', empObj);
         if(result.data.result){
             alert("Employee Data Updated Successfully");
             showEmpData();
@@ -76,7 +74,7 @@ const EmployeeCreation = () => {
     }
 
     const deleteEmpData = async (id) => {
-        const result = await axios.get(deleteEmpDataApi + id);
+        const result = await axios.get(API + 'DeleteEmployeeByEmpId?empid=' + id);
         if(result.data.result){
             alert("Employee Data Deleted Successfully");
             showEmpData();
@@ -229,21 +227,40 @@ const EmployeeCreation = () => {
                                             <th>Delete</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {
-                                            empData.map((item, index) => {
-                                                return (<tr>
-                                                    <td>{index +1}</td>
-                                                    <td>{item.empName}</td>
-                                                    <td>{item.empContactNo}</td>
-                                                    <td>{item.empEmail}</td>
-                                                    <td>{item.city}</td>
-                                                    <td><button className='btn btn-success btn-sm' onClick={() => {showEmpDataById(item.empId)}}>Edit</button></td>
-                                                    <td><button className='btn btn-warning btn-sm' onClick={() =>{deleteEmpData(item.empId)}}>Delete</button></td>
-                                                </tr>)
-                                            })
+                                    {
+                                            isLoader && <tbody>
+                                            <tr>
+                                                <td colSpan={9} className='text-center'>
+                                                    <div class="spinner-border text-muted"></div>
+                                                    <div class="spinner-border text-primary"></div>
+                                                    <div class="spinner-border text-success"></div>
+                                                    <div class="spinner-border text-info"></div>
+                                                    <div class="spinner-border text-warning"></div>
+                                                    <div class="spinner-border text-danger"></div>
+                                                    <div class="spinner-border text-secondary"></div>
+                                                    <div class="spinner-border text-dark"></div>
+                                                    <div class="spinner-border text-light"></div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
                                         }
-                                    </tbody>
+                                        {
+                                            !isLoader && <tbody>
+                                            {
+                                                  empData.map((item, index) => {
+                                                    return (<tr>
+                                                        <td>{index +1}</td>
+                                                        <td>{item.empName}</td>
+                                                        <td>{item.empContactNo}</td>
+                                                        <td>{item.empEmail}</td>
+                                                        <td>{item.city}</td>
+                                                        <td><button className='btn btn-success btn-sm' onClick={() => {showEmpDataById(item.empId)}}>Edit</button></td>
+                                                        <td><button className='btn btn-warning btn-sm' onClick={() =>{deleteEmpData(item.empId)}}>Delete</button></td>
+                                                    </tr>)
+                                                })
+                                            }
+                                        </tbody>
+                                        }
                                 </table>
                             </div>
                         </div>

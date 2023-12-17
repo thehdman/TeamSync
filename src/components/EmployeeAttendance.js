@@ -2,11 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const EmployeeAttendance = () => {
-
-    const showAttendanceApi = "https://onlinetestapi.gerasim.in/api/TeamSync/GetAllAttendance";
-    const addAttendanceApi = "https://onlinetestapi.gerasim.in/api/TeamSync/AddAttendance";
-    const empDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/GetAllEmployee";
-    const deleteAttendanceApi = "https://onlinetestapi.gerasim.in/api/TeamSync/DeleteAttendanceById?attendanceId=";
+    
+    const API = "https://onlinetestapi.gerasim.in/api/TeamSync/";
 
     let [attendanceData, setAttendanceData] = useState([]);
     let [attendanceObj, setAttendanceObj] = useState({
@@ -26,7 +23,7 @@ const EmployeeAttendance = () => {
     }, [])
 
     const showAttendance = async () => {
-        const result = await axios.get(showAttendanceApi);
+        const result = await axios.get(API + 'GetAllAttendance');
         setIsLoader(false)
         setAttendanceData(result.data.data);
     }
@@ -40,13 +37,13 @@ const EmployeeAttendance = () => {
     }
 
     const showEmpName = async () => {
-        const result = await axios.get(empDataApi);
+        const result = await axios.get(API + 'GetAllEmployee');
         setEmpData(result.data.data);
     }
 
     const addAttendance = async () => {
         debugger;
-        const result = await axios.post(addAttendanceApi, attendanceObj);
+        const result = await axios.post(API + 'AddAttendance', attendanceObj);
         if (result.data.result) {
             alert('Attendance Data Added Successfully');
             showAttendance();
@@ -70,7 +67,7 @@ const EmployeeAttendance = () => {
     const updateAttendance = async () => { }
 
     const deleteAttendance = async (id) => {
-        const result = await axios.get(deleteAttendanceApi + id);
+        const result = await axios.get(API + 'DeleteAttendanceById?attendanceId=' + id);
         if (result.data.result) {
             alert('Attendance Data Deleted Successfully');
             showAttendance();

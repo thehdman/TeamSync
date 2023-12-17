@@ -4,11 +4,8 @@ import axios from 'axios';
 
 const SalaryAdvance = () => {
 
-    const showAdvanceDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/GetAllAdvance";
-    const addAdvanceDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/AddAdvance"
-    const showEmpDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/GetAllEmployee";
+    const API = "https://onlinetestapi.gerasim.in/api/TeamSync/";
     const updateAdvanceDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/UpdateAdvance";
-    const deleteAdvanceDataApi = "https://onlinetestapi.gerasim.in/api/TeamSync/DeleteAdvanceById?advanceId="
 
 
     let [empData, setEmpData] = useState([]);
@@ -20,6 +17,7 @@ const SalaryAdvance = () => {
         "advanceAmount": 0,
         "reason": ""
     });
+    let [isLoader, setIsLoader] = useState(true);
 
     useEffect(() => {
         showAdvanceData();
@@ -27,7 +25,8 @@ const SalaryAdvance = () => {
     }, []);
 
     const showAdvanceData = async () => {
-        const result = await axios.get(showAdvanceDataApi);
+        const result = await axios.get(API + 'GetAllAdvance');
+        setIsLoader(false);
         setAdvanceData(result.data.data);
     }
 
@@ -36,12 +35,12 @@ const SalaryAdvance = () => {
     }
 
     const showEmpData = async () => {
-        const result = await axios.get(showEmpDataApi);
+        const result = await axios.get(API + 'GetAllEmployee');
         setEmpData(result.data.data)
     }
 
     const addAdvance = async () => {
-        const result = await axios.post(addAdvanceDataApi, advanceObj);
+        const result = await axios.post(API + 'AddAdvance', advanceObj);
         if (result.data.result) {
             alert('Attendance Data Added Successfully');
             showAdvanceData();
@@ -64,7 +63,7 @@ const SalaryAdvance = () => {
     const updateAdvance = async () => { }
 
     const deleteAdvanceData = async (id) => {
-        const result = await axios.get(deleteAdvanceDataApi + id);
+        const result = await axios.get(API + 'DeleteAdvanceById?advanceId=' + id);
         if (result.data.result) {
             alert('Attendance Data Deleted Successfully');
             showAdvanceData();
@@ -165,22 +164,41 @@ const SalaryAdvance = () => {
                                             <th>Delete</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {
-                                            advanceData.map((item, index) => {
-                                                return (<tr>
-                                                    <td>{index + 1}</td>
-                                                    <td>{item.empName}</td>
-                                                    <td>{item.empContactNo}</td>
-                                                    <td>{item.advanceDate}</td>
-                                                    <td>{item.advanceAmount}</td>
-                                                    <td>{item.reason}</td>
-                                                    <td><button className='btn btn-primary btn-sm' onClick={() => { editAdvanceData(item) }}>Edit</button></td>
-                                                    <td><button className='btn btn-danger btn-sm' onClick={() => { deleteAdvanceData(item.advanceId) }}>Delete</button></td>
-                                                </tr>)
-                                            })
+                                    {
+                                            isLoader && <tbody>
+                                            <tr>
+                                                <td colSpan={9} className='text-center'>
+                                                    <div class="spinner-border text-muted"></div>
+                                                    <div class="spinner-border text-primary"></div>
+                                                    <div class="spinner-border text-success"></div>
+                                                    <div class="spinner-border text-info"></div>
+                                                    <div class="spinner-border text-warning"></div>
+                                                    <div class="spinner-border text-danger"></div>
+                                                    <div class="spinner-border text-secondary"></div>
+                                                    <div class="spinner-border text-dark"></div>
+                                                    <div class="spinner-border text-light"></div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
                                         }
-                                    </tbody>
+                                        {
+                                             !isLoader && <tbody>
+                                             {
+                                                 advanceData.map((item, index) => {
+                                                     return (<tr>
+                                                         <td>{index + 1}</td>
+                                                         <td>{item.empName}</td>
+                                                         <td>{item.empContactNo}</td>
+                                                         <td>{item.advanceDate}</td>
+                                                         <td>{item.advanceAmount}</td>
+                                                         <td>{item.reason}</td>
+                                                         <td><button className='btn btn-primary btn-sm' onClick={() => { editAdvanceData(item) }}>Edit</button></td>
+                                                         <td><button className='btn btn-danger btn-sm' onClick={() => { deleteAdvanceData(item.advanceId) }}>Delete</button></td>
+                                                     </tr>)
+                                                 })
+                                             }
+                                         </tbody>
+                                        }
                                 </table>
                             </div>
                         </div>
